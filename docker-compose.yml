@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:17
+    # 컨테이너 이름
+    container_name: programmers-module-db
+    # 환경변수
+    environment:
+      POSTGRES_USER: sa
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: module-db
+    # 포트 연결
+    ports:
+      - "127.0.0.1:5432:5432"
+    # 볼륨 연결
+    volumes:
+      - dev-module:/var/lib/postgresql/data
+
+volumes:
+  dev-module:
