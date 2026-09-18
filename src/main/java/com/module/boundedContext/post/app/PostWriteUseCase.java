@@ -6,6 +6,7 @@ import com.module.boundedContext.post.domain.PostMember;
 import com.module.boundedContext.post.out.PostRepository;
 import com.module.global.eventPublisher.EventPublisher;
 import com.module.global.response.ResponseData;
+import com.module.shared.member.out.MemberApiClient;
 import com.module.shared.post.dto.PostCommentDto;
 import com.module.shared.post.dto.PostDto;
 import com.module.shared.post.event.PostCommentCreatedEvent;
@@ -18,13 +19,14 @@ import org.springframework.stereotype.Service;
 public class PostWriteUseCase {
     private final PostRepository postRepository;
     private final EventPublisher eventPublisher;
+    private final MemberApiClient memberApiClient;
 
     public ResponseData<Post> write(PostMember author, String title, String content) {
         Post post = postRepository.save(new Post(author, title, content));
 
         eventPublisher.publish(new PostCreatedEvent(new PostDto(post)));
 
-        String secureTip = "1234";
+        String secureTip = memberApiClient.getRandomSecureTip();
 
         return new ResponseData<>("201-1", "%d번 글이 생성되었습니다. 보안 팁: %s".formatted(post.getId(), secureTip), post);
     }
