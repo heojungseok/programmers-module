@@ -1,18 +1,28 @@
 package com.module.boundedContext.post.app;
 
+import com.module.boundedContext.post.domain.Post;
 import com.module.boundedContext.post.domain.PostMember;
 import com.module.boundedContext.post.out.PostMemberRepository;
+import com.module.boundedContext.post.out.PostRepository;
+import com.module.global.response.ResponseData;
 import com.module.shared.member.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostFacade {
     private final PostMemberRepository postMemberRepository;
+    private final PostWriteUseCase postWriteUseCase;
+    private final PostRepository postRepository;
 
     @Transactional(propagation = REQUIRES_NEW)
     public void syncMember(MemberDto member) {
@@ -26,5 +36,37 @@ public class PostFacade {
         );
 
         postMemberRepository.save(postMember);
+    }
+
+    @Transactional
+    public ResponseData<Post> write(PostMember author, String title, String content) {
+        return postWriteUseCase.write(author, title, content);
+    }
+
+    @Transactional(readOnly = true)
+    public Long count() {
+        return postRepository.count();
+    }
+
+    @Transactional
+    public void initPosts(String user1, String user2, String user3) {
+        if (postRepository.count() > 0) return;
+
+        PostMember postMember1 = postMemberRepository.findByUsername(user1).get();
+        PostMember postMember2 = postMemberRepository.findByUsername(user2).get();
+        PostMember postMember3 = postMemberRepository.findByUsername(user3).get();
+
+        ResponseData<Post> response1 = postWriteUseCase.write(postMember1, "제목1", "내용1");
+        ResponseData<Post> response2 = postWriteUseCase.write(postMember1, "제목2", "내용2");
+        ResponseData<Post> response3 = postWriteUseCase.write(postMember1, "제목3", "내용3");
+        ResponseData<Post> response4 = postWriteUseCase.write(postMember2, "제목4", "내용4");
+        ResponseData<Post> response5 = postWriteUseCase.write(postMember2, "제목5", "내용5");
+        ResponseData<Post> response6 = postWriteUseCase.write(postMember3, "제목6", "내용6");
+
+        log.debug(
+                "초기 글 작성 결과: {}, {}, {}, {}, {}, {}",
+                response1.getMsg(), response2.getMsg(), response3.getMsg(),
+                response4.getMsg(), response5.getMsg(), response6.getMsg()
+        );
     }
 }

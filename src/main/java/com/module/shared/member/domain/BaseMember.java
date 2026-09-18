@@ -21,4 +21,8 @@ public abstract class BaseMember extends BaseEntity {
         this.nickname = nickname;
         this.activityScore = activityScore;
     }
+
+    protected int increaseActivityScore(int amount) {
+        return activityScore += amount;
+    }
 }

@@ -22,4 +22,10 @@ public class Member extends SourceMember {
         super(username, nickname);
         this.password = password;
     }
+
+    public int increaseActivityScore(int amount) {
+        if (amount == 0) return getActivityScore();
+
+        return super.increaseActivityScore(amount);
+    }
 }

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class MemberDataInit {
     private final MemberFacade memberFacade;
 
     @Bean
+    @Order(1)
     public ApplicationRunner memberDataInitRunner() {
         return args -> {
             makeBaseMembers();

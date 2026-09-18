@@ -9,11 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.springframework.transaction.annotation.Propagation.*;
+
 @Service
 @RequiredArgsConstructor
 public class MemberFacade {
 
     private final MemberJoinUseCase memberJoinUseCase;
+    private final MemberScoreUseCase memberScoreUseCase;
     private final MemberRepository memberRepository;
 
     @Transactional
@@ -33,5 +36,10 @@ public class MemberFacade {
         for (MemberJoinRequest member : members) {
             memberJoinUseCase.join(member.getUsername(), member.getPassword(), member.getNickname());
         }
+    }
+
+    @Transactional(propagation = REQUIRES_NEW)
+    public void increaseMemberActivityScore(Long authorId) {
+        memberScoreUseCase.increaseActivityScore(authorId, 3);
     }
 }
