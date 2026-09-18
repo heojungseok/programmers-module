@@ -30,5 +30,6 @@ public class PostDataInit {
     }
 
     private void makeBaseComments() {
+        postFacade.initPostComments(1,2,3,4,5,6);
     }
 }

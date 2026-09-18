@@ -31,4 +31,16 @@ public class Post extends BaseIdAndTime {
         this.title = title;
         this.content = content;
     }
+
+    public boolean hasComments() {
+        return !comments.isEmpty();
+    }
+
+    public PostComment addComment(PostMember author, String comment) {
+        PostComment postComment = new PostComment(this, author, comment);
+
+        comments.add(postComment);
+
+        return postComment;
+    }
 }

@@ -39,7 +39,7 @@ public class MemberFacade {
     }
 
     @Transactional(propagation = REQUIRES_NEW)
-    public void increaseMemberActivityScore(Long authorId) {
-        memberScoreUseCase.increaseActivityScore(authorId, 3);
+    public void increaseMemberActivityScore(Long authorId, int score) {
+        memberScoreUseCase.increaseActivityScore(authorId, score);
     }
 }

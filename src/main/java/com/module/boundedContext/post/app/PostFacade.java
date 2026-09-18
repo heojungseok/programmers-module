@@ -1,6 +1,7 @@
 package com.module.boundedContext.post.app;
 
 import com.module.boundedContext.post.domain.Post;
+import com.module.boundedContext.post.domain.PostComment;
 import com.module.boundedContext.post.domain.PostMember;
 import com.module.boundedContext.post.out.PostMemberRepository;
 import com.module.boundedContext.post.out.PostRepository;
@@ -68,5 +69,31 @@ public class PostFacade {
                 response1.getMsg(), response2.getMsg(), response3.getMsg(),
                 response4.getMsg(), response5.getMsg(), response6.getMsg()
         );
+    }
+
+    @Transactional
+    public void initPostComments(long first, long second, long third, long fourth, long fifth, long sixth) {
+        Post post1 = postRepository.findById(first).get();
+        Post post2 = postRepository.findById(second).get();
+        Post post3 = postRepository.findById(third).get();
+        Post post4 = postRepository.findById(fourth).get();
+        Post post5 = postRepository.findById(fifth).get();
+        Post post6 = postRepository.findById(sixth).get();
+
+        PostMember postMember1 = postMemberRepository.findByUsername("user1").get();
+        PostMember postMember2 = postMemberRepository.findByUsername("user2").get();
+        PostMember postMember3 = postMemberRepository.findByUsername("user3").get();
+
+        if (post1.hasComments()) return;
+
+        postWriteUseCase.add(post1, postMember1, "댓글");
+        postWriteUseCase.add(post1, postMember2, "댓글");
+        postWriteUseCase.add(post4, postMember3, "댓글");
+        postWriteUseCase.add(post2, postMember1, "댓글");
+        postWriteUseCase.add(post3, postMember2, "댓글");
+        postWriteUseCase.add(post3, postMember2, "댓글");
+        postWriteUseCase.add(post6, postMember3, "댓글");
+        postWriteUseCase.add(post5, postMember3, "댓글");
+
     }
 }
