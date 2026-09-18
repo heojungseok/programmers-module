@@ -13,9 +13,5 @@ public abstract class BaseEntity {
     public abstract LocalDateTime getCreatedAt();
 
     public abstract LocalDateTime getModifiedAt();
-/*
-    protected void publishEvent(Object event) {
 
-    }
-    */
 }
