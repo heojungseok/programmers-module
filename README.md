@@ -167,6 +167,19 @@ PostWriteUseCase
 
 SQL로 조회한 데이터 개수입니다.
 
+<details>
+<summary>데이터 개수 확인 SQL</summary>
+
+```sql
+SELECT
+    (SELECT count(*) FROM member_member) AS members,
+    (SELECT count(*) FROM post_member) AS replicas,
+    (SELECT count(*) FROM post_post) AS posts,
+    (SELECT count(*) FROM post_post_comment) AS comments;
+```
+
+</details>
+
 ```text
  members | replicas | posts | comments
 ---------+----------+-------+----------
@@ -174,6 +187,38 @@ SQL로 조회한 데이터 개수입니다.
 ```
 
 활동점수는 `글 수 × 3 + 댓글 수 × 1`로 계산한 값과 일치했습니다.
+
+<details>
+<summary>회원별 글·댓글 수와 활동점수 확인 SQL</summary>
+
+글과 댓글을 작성자별로 각각 집계한 뒤 회원과 연결했습니다. 글이나 댓글이 없는 회원은 0으로 표시합니다.
+
+```sql
+WITH post_counts AS (
+    SELECT author_id, count(*) AS post_count
+    FROM post_post
+    GROUP BY author_id
+), comment_counts AS (
+    SELECT author_id, count(*) AS comment_count
+    FROM post_post_comment
+    GROUP BY author_id
+)
+SELECT
+    m.username,
+    coalesce(p.post_count, 0) AS post_count,
+    coalesce(c.comment_count, 0) AS comment_count,
+    coalesce(p.post_count, 0) * 3
+        + coalesce(c.comment_count, 0) AS expected_score,
+    m.activity_score AS original_score,
+    r.activity_score AS replica_score
+FROM member_member m
+LEFT JOIN post_counts p ON p.author_id = m.id
+LEFT JOIN comment_counts c ON c.author_id = m.id
+LEFT JOIN post_member r ON r.id = m.id
+ORDER BY m.id;
+```
+
+</details>
 
 | 회원 | 글 수 | 댓글 수 | 계산한 점수 | 원본 점수 | 복제본 점수 |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -235,6 +280,22 @@ curl -i http://localhost:8888/api/members/security-tip
 HTTP/1.1 200
 
 비밀번호의 유효기간은 90일 입니다.
+```
+
+초기 글 작성 결과는 다음 코드로 출력했습니다.
+
+```java
+log.debug(
+    "초기 글 작성 결과: {}, {}, {}, {}, {}, {}",
+    response1.getMsg(), response2.getMsg(), response3.getMsg(),
+    response4.getMsg(), response5.getMsg(), response6.getMsg()
+);
+```
+
+실제 로그의 앞부분입니다. 나머지 5개 글의 결과는 생략했습니다.
+
+```text
+2026-09-19T15:10:04.836+09:00 DEBUG 43844 --- [programmers-module] [    Test worker] c.m.boundedContext.post.app.PostFacade   : 초기 글 작성 결과: 1번 글이 생성되었습니다. 보안 팁: 비밀번호의 유효기간은 90일 입니다.
 ```
 
 ## 5. 강의와 다르게 선택한 부분
