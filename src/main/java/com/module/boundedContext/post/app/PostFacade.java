@@ -44,6 +44,13 @@ public class PostFacade {
         return postWriteUseCase.write(author, title, content);
     }
 
+    @Transactional
+    public void add(Long postId, Long authorId, String comment) {
+        Post post = postRepository.findById(postId).get();
+        PostMember author = postMemberRepository.findById(authorId).get();
+        postWriteUseCase.add(post, author, comment);
+    }
+
     @Transactional(readOnly = true)
     public Long count() {
         return postRepository.count();

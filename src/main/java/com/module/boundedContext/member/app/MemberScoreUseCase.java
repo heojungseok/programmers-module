@@ -16,6 +16,8 @@ public class MemberScoreUseCase {
     private final EventPublisher eventPublisher;
 
     public void increaseActivityScore(Long authorId, int amount) {
+        if (amount == 0) return;
+
         Member member = memberRepository.findById(authorId).get();
         member.increaseActivityScore(amount);
         memberRepository.flush();
